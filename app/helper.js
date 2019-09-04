@@ -27,13 +27,9 @@ var ORGS = hfc.getConfigSetting('network-config');
 var CONNECT = hfc.getConfigSetting('connect_profile');
 async function getClientForOrg (userorg, username) {
 	logger.debug('getClientForOrg - ****** START %s %s', userorg, username);
-
 	let client = hfc.loadFromConfig(CONNECT);
-
 	client.loadFromConfig(ORGS[userorg]);
-
 	await client.initCredentialStores();
-
 	if(username) {
 		let user = await client.getUserContext(username, true);
 		if(!user) {
@@ -43,7 +39,6 @@ async function getClientForOrg (userorg, username) {
 		}
 	}
 	logger.debug('getClientForOrg - ****** END %s %s \n\n', userorg, username)
-
 	return client;
 }
 
@@ -51,10 +46,7 @@ var getRegisteredUser = async function(username, userOrg, isJson) {
     console.log("=================================================");
 	try {
         var client = await getClientForOrg(userOrg);
-        console.log(client);
 		logger.debug('Successfully initialized the credential stores');
-			// client can now act as an agent for organization Org1
-			// first check to see if the user is already enrolled
         var user = await client.getUserContext(username, true);
 
 		if (user && user.isEnrolled()) {
@@ -72,14 +64,11 @@ var getRegisteredUser = async function(username, userOrg, isJson) {
 				enrollmentID: username,
 				affiliation:  'org1.department1'
 			}, adminUserObj);
-			logger.debug("secret:");
-			logger.debug(secret);
-			logger.debug('Successfully got the secret for user %s',username);
+
 			user = await client.setUserContext({username:username, password:secret});
 			logger.debug('Successfully enrolled username %s  and setUserContext on the client object', username);
 		}
 		if(user && user.isEnrolled) {
-
 			if (isJson && isJson === true) {
 				var response = {
 					success: true,
@@ -95,7 +84,6 @@ var getRegisteredUser = async function(username, userOrg, isJson) {
 		logger.error('Failed to get registered user: %s with error: %s', username, error.toString());
 		return 'failed '+error.toString();
 	}
-
 };
 
 

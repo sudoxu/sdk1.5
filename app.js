@@ -48,12 +48,12 @@ app.set('secret', 'thisismysecret');
 app.use(expressJWT({
 	secret: 'thisismysecret'
 }).unless({
-	path: ['/login','/invoke']
+	path: ['/login','/invoke','/query']
 }));
 app.use(bearerToken());
 app.use(function(req, res, next) {
 	logger.debug(' ------>>>>>> new request for %s',req.originalUrl);
-	if (req.originalUrl.indexOf('/login') >= 0  || req.originalUrl.indexOf('/invoke') >= 0) {
+	if (req.originalUrl.indexOf('/login') >= 0  || req.originalUrl.indexOf('/invoke') >= 0 || req.originalUrl.indexOf('/query') >= 0) {
 		return next();
 	}
 
@@ -450,26 +450,40 @@ app.post('/invoke', async function(req, res) {
 	res.send(message);
 });
 // Query on chaincode on target peers
-app.get('/channels/:channelName/chaincodes/:chaincodeName', async function(req, res) {
+app.get('/query', async function(req, res) {
 	logger.debug('==================== QUERY BY CHAINCODE ==================');
-	var channelName = req.params.channelName;
-	var chaincodeName = req.params.chaincodeName;
-	let args = req.query.args;
-	let fcn = req.query.fcn;
-	let peer = req.query.peer;
-
-	logger.debug('channelName : ' + channelName);
+	var peers = req.body.peers;
+	var chaincodeName = req.body.chaincodeName;
+	var channelName = req.body.channelName;
+	var username = req.body.username;
+	var orgname = req.body.orgname;
+	var fcn = req.body.fcn;
+	var args = req.body.args;
+	logger.debug('channelName  : ' + channelName);
 	logger.debug('chaincodeName : ' + chaincodeName);
-	logger.debug('fcn : ' + fcn);
-	logger.debug('args : ' + args);
+	logger.debug('fcn  : ' + fcn);
+	logger.debug('args  : ' + args);
+	if (!username) {
+	//	res.json(getErrorMessage('\'username\''));
+	//	return;
+	}
+	if (!orgname) {
+		orgname = "mmOrg";
+	//	res.json(getErrorMessage('\'orgname\''));
+	//	return;
+	}
 
+	if (!peers) {
+		peers = ["peer0."+orgname+".51mm.com","peer1."+orgname+".51mm.com"];
+	}
+	// "peers":["peer0.btcOrg.51mm.com","peer1.btcOrg.51mm.com"],
+	// "channelName":"mmchannel",
+	// "chaincodeName":"ledger",
 	if (!chaincodeName) {
-		res.json(getErrorMessage('\'chaincodeName\''));
-		return;
+		chaincodeName = "ledger";
 	}
 	if (!channelName) {
-		res.json(getErrorMessage('\'channelName\''));
-		return;
+		channelName = "mmchannel";
 	}
 	if (!fcn) {
 		res.json(getErrorMessage('\'fcn\''));
@@ -479,11 +493,8 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function(req, 
 		res.json(getErrorMessage('\'args\''));
 		return;
 	}
-	args = args.replace(/'/g, '"');
-	args = JSON.parse(args);
-	logger.debug(args);
 
-	let message = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, req.username, req.orgname);
+	let message = await query.queryChaincode(peers, channelName, chaincodeName, args, fcn, username, orgname);
 	res.send(message);
 });
 //  Query Get Block by BlockNumber
