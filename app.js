@@ -304,7 +304,6 @@ app.post('/channels/chaincodes', async function(req, res) {
 	res.send(message);
 });
 
-
 app.put('/channels/chaincodes', async function(req, res) {
 	logger.debug('==================== UPGRADE CHAINCODE ==================');
 	var peers = req.body.peers;
