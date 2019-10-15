@@ -147,7 +147,7 @@ const upgrateChaincode = async function(peers, channelName, chaincodeName, chain
 							// generated above was based on the admin id not the current
 							// user assigned to the 'client' instance.
 				proposalResponses: proposalResponses,
-				proposal: proposal
+				proposal: proposal,
 			};
 			const sendPromise = channel.sendTransaction(orderer_request);
 			// put the send to the orderer last so that the events get registered and

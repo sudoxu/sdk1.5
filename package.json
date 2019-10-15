@@ -31,5 +31,8 @@
     "jsonwebtoken": "^7.3.0",
     "log4js": "^0.6.38",
     "pm2": "^3.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.4.0"
   }
 }

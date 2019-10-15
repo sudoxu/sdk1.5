@@ -60,9 +60,11 @@ var queryChaincode = async function(peer, channelName, chaincodeName, args, fcn,
 		}
 	} catch(error) {
 		logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
+		let errinfo = error.toString();
+		errinfo.replace("Error: ","");
 		const response = {
 			success: false,
-			error:error.toString()
+			error:errinfo
 		};
 		return response;
 	} finally {

@@ -17,18 +17,20 @@ wallet.exists('admin').then((adminExists)=>{
         console.log('An identity for the admin user "admin" already exists in the wallet');
     } else {
         helper.getClientForOrg("mmOrg").then((client)=>{
-            var ca = client.getCertificateAuthority();
-            ca.enroll({ enrollmentID: 'admin', enrollmentSecret: 'adminpw' }).then((enrollment)=>{
-                const identity = X509WalletMixin.createIdentity('mmOrg', enrollment.certificate, enrollment.key.toBytes());
-                wallet.import('admin', identity).then(()=>{
-
-                },(err)=>{
-                    logger.error(err);
-                });
-            },(err)=>{
-                logger.error(err);
-            });
-        },(err)=>{
+            return client;
+        }).then((client)=>{
+            const ca = client.getCertificateAuthority();
+            return ca;
+        }).then((ca)=>{
+            return ca.enroll({ enrollmentID: 'admin', enrollmentSecret: 'adminpw' });
+        }).then((enrollment)=>{
+            return  X509WalletMixin.createIdentity('mmOrg', enrollment.certificate, enrollment.key.toBytes());
+        }).then((id)=>{
+           return  wallet.import('admin', id)
+        }).then((result)=>{
+            logger.info(result);
+        })
+        .catch((err)=>{
             logger.error(err);
         })
     }
@@ -107,6 +109,3 @@ var RegisterEvent = async function () {
     listenerBlock.register();
     logger.debug("===========================================register=============");
 };
-
-
-logger.debug("===========================================RegisterEvent=============");
