@@ -2,3 +2,4 @@ node_modules
 .vscode
 config.json
 config2.json
+.config.json.swp
