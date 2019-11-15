@@ -494,6 +494,9 @@ app.get('/query', async function(req, res) {
 	}
 
 	let message = await query.queryChaincode(peers, channelName, chaincodeName, args, fcn, username, orgname);
+	if (message.error) {
+		message.error.replace("Error:","");
+	}
 	res.send(message);
 });
 //  Query Get Block by BlockNumber
